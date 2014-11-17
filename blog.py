@@ -38,6 +38,11 @@ class NewPostHandler(Handler):
         subject = self.request.get('subject')
         content = self.request.get('content')
 
+        if subject and content:
+            blog_post = Post(subject=subject, content=content)
+            blog_post.put()
+
+            self.redirect('/blog')
 
 
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
