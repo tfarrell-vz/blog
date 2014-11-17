@@ -43,9 +43,19 @@ class NewPostHandler(Handler):
             blog_post = Post(subject=subject, content=content)
             blog_post.put()
 
-            self.redirect('/blog')
+            post_id = blog_post.key().id()
 
+            self.redirect('/blog/%s' % post_id)
+
+class PostHandler(Handler):
+    def get(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        posts = []
+        posts.append(post)
+        
+        self.render('index.html', posts=posts)
 
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/newpost', NewPostHandler),
+                               ('/blog/(\d+)', PostHandler),
                                ], debug=True)

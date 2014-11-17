@@ -2,10 +2,13 @@
 <html>
 <head>
 	<title>My Blog</title>
+	<!-- separate style from html -->
 	<style>
 		.blog_post {
 			margin-left: 50px;
 			margin-bottom: 50px;
+			background-color: rgb(224,224,224);
+			width: 600px;
 		}
 		.post_header{
 			color: red;
@@ -21,6 +24,7 @@
 	{% if posts %}
 		{% for post in posts %}
 			<div class="blog_post">
+				<!-- Link blog post to its permalink --> 
 				<h2 class="post_header">{{ post.subject }}</h2>
 				<p class="content">{{ post.content }}</p>
 				<p class="created">{{ post.created }}</p>
