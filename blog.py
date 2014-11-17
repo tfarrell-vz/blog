@@ -26,8 +26,9 @@ class Post(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
 
 class BlogHandler(Handler):
-    def get(self):
-        self.render('index.html')
+    def get(self, posts=[]):
+        posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC").fetch(25)
+        self.render('index.html', posts=posts)
 
 
 class NewPostHandler(Handler):

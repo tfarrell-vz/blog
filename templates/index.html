@@ -5,5 +5,13 @@
 </head>
 <body>
 	<h1>Blog!</h1>
+	{% if posts %}
+		{% for post in posts %}
+			<div class="blog_post">
+				<h2>{{ post.subject }}</h2>
+				<p>{{ post.content }}</p>
+			</div>
+		{% endfor %}
+	{% endif %}
 </body>
 </html>
