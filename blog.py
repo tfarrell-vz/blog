@@ -55,7 +55,17 @@ class PostHandler(Handler):
         
         self.render('index.html', posts=posts)
 
+class CookieHandler(Handler):
+    def get(self):
+        visits = self.request.cookies.get('visits', 0)
+        visits = int(visits)
+        visits += 1
+        self.response.headers.add_header('Set-Cookie', 'visits=%s' % visits)
+
+        self.write("You've been here %s times!" % visits)
+
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/newpost', NewPostHandler),
                                ('/blog/(\d+)', PostHandler),
+                               ('/blog/cookie', CookieHandler)
                                ], debug=True)
