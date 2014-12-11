@@ -25,6 +25,11 @@ class Post(db.Model):
     content = db.TextProperty()
     created = db.DateTimeProperty(auto_now_add=True)
 
+class User(db.Model):
+    user_id = db.StringProperty()
+    password = db.StringProperty()
+    email = db.EmailProperty()
+
 class BlogHandler(Handler):
     def get(self, posts=[]):
         posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC").fetch(25)
