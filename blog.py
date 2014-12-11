@@ -112,18 +112,23 @@ class SignupHandler(Handler):
             new_user.put()
 
             self.response.headers.add_header('Set-Cookie', 'user_id=%s' % str(username))
-            return self.redirect('/welcome')
+            return self.redirect('/blog/welcome')
 
 class SuccessHandler(Handler):
     def get(self):
         username = self.request.cookies.get('user_id')
         self.render('welcome.html', username=username)
 
+class UserListHandler(Handler):
+    def get(self, posts=[]):
+        users = db.GqlQuery("SELECT * FROM User").fetch(25)
+        self.render('userlist.html', users=users)    
+
 
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/newpost', NewPostHandler),
                                ('/blog/(\d+)', PostHandler),
-                               ('/blog/cookie', CookieHandler),
-                               ('/signup', SignupHandler),
-                               ('/welcome', SuccessHandler),
+                               ('/blog/userlist', UserListHandler),
+                               ('/blog/signup', SignupHandler),
+                               ('/blog/welcome', SuccessHandler),
                                ], debug=True)
