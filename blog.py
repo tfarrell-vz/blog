@@ -105,7 +105,13 @@ class SignupHandler(Handler):
         self.render('signup.html', username=username, **errors)
 
         if not errors:
-            return self.redirect('/welcome?username=%s' % username)
+            self.response.headers.add_header('Set-Cookie', 'user_id=%s' % str(username))
+            return self.redirect('/welcome')
+
+class SuccessHandler(Handler):
+    def get(self):
+        username = self.request.cookies.get('user_id')
+        self.render('welcome.html', username=username)
 
 class CookieHandler(Handler):
     def get(self):
@@ -126,4 +132,5 @@ app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/(\d+)', PostHandler),
                                ('/blog/cookie', CookieHandler),
                                ('/signup', SignupHandler),
+                               ('/welcome', SuccessHandler),
                                ], debug=True)
