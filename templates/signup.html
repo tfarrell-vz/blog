@@ -1,0 +1,46 @@
+<html>
+<head>
+	<style>
+	.error {color: red;}
+	</style>
+</head>
+<body>
+
+<h2>Signup</h2>
+
+
+<form method="post">
+<table>
+<tbody>
+	<tr>
+		<td><label for="user">Username</label></td>
+		<td><input id="user" type="text" name="username" value="{{ username }}"></td>
+		<td><p class="error">{{ username_error }}</p></td>
+	</tr>
+	<tr>
+		<td><label for="password">Password</label></td>
+		<td><input id="password" type="password" name="password"></td>
+		<td><p class="error">
+			{% if not passwords_mismatch_error %}
+				{{ password_error }}
+			{% endif %}
+			</p></td>
+	</tr>
+
+	<tr>
+		<td><label for="verify">Verify Password</label></td>
+		<td><input id="verify" type="password" name="verify"></td>
+		<td><p class="error">{{ passwords_mismatch_error }}</p></td>
+	</tr>
+	<tr>
+		<td><label for="email">Email (optional)</label></td>
+		<td><input id="email" type="text" name="email"></td>
+		<td><p class="error">{{ email_error }}</p></td>
+	</tr>
+</tbody>
+</table>
+	<input type="submit">
+</form>
+
+</body>
+</html>

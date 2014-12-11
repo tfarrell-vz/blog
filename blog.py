@@ -1,3 +1,4 @@
+import re
 import os
 import jinja2
 import webapp2
@@ -60,6 +61,52 @@ class PostHandler(Handler):
         
         self.render('index.html', posts=posts)
 
+# Verification functions for the signup
+# Return boolean values context to render error messages
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+def valid_username(username):
+    return USER_RE.match(username)
+
+PASS_RE = re.compile(r"^.{3,20}$")
+def valid_password(password):
+    return PASS_RE.match(password)
+
+EMAIL_RE =re.compile(r"^[\S]+@[\S]+\.[\S]+")
+def valid_email(email):
+    return EMAIL_RE.match(email)
+
+def passwords_match(password, verify):
+    if password != verify:
+        return False
+    else:
+        return True
+
+class SignupHandler(Handler):
+    def get(self):
+        self.render('signup.html')
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+        verify = self.request.get('verify')
+        email = self.request.get('email')
+
+        errors = {}
+        if not valid_username(username):
+            errors['username_error'] = "Error: That's not a valid username."
+        if not valid_password(password):
+            errors['password_error'] = "That wasn't a valid password."
+        if not passwords_match(password, verify):
+            errors['passwords_mismatch_error'] = "Your passwords didn't match."
+        if email:
+            if not valid_email(email):
+                errors['email_error'] = "That's not a valid email."
+
+        self.render('signup.html', username=username, **errors)
+
+        if not errors:
+            return self.redirect('/welcome?username=%s' % username)
+
 class CookieHandler(Handler):
     def get(self):
         visits = self.request.cookies.get('visits', 0)
@@ -77,5 +124,6 @@ class CookieHandler(Handler):
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/newpost', NewPostHandler),
                                ('/blog/(\d+)', PostHandler),
-                               ('/blog/cookie', CookieHandler)
+                               ('/blog/cookie', CookieHandler),
+                               ('/signup', SignupHandler),
                                ], debug=True)
