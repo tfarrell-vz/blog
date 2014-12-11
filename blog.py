@@ -105,6 +105,12 @@ class SignupHandler(Handler):
         self.render('signup.html', username=username, **errors)
 
         if not errors:
+            if email:
+                new_user = User(user_id=username, password=password, email=email)
+            else:
+                new_user = User(user_id=username, password=password)
+            new_user.put()
+
             self.response.headers.add_header('Set-Cookie', 'user_id=%s' % str(username))
             return self.redirect('/welcome')
 
@@ -113,19 +119,6 @@ class SuccessHandler(Handler):
         username = self.request.cookies.get('user_id')
         self.render('welcome.html', username=username)
 
-class CookieHandler(Handler):
-    def get(self):
-        visits = self.request.cookies.get('visits', 0)
-        if visits.isdigit():
-            visits = int(visits) + 1
-        else:
-            visits = 0
-        self.response.headers.add_header('Set-Cookie', 'visits=%s' % visits)
-
-        if visits > 10000:
-            self.write("You are the best ever!")
-        else: 
-            self.write("You've been here %s times!" % visits)
 
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/newpost', NewPostHandler),
