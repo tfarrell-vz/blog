@@ -58,11 +58,16 @@ class PostHandler(Handler):
 class CookieHandler(Handler):
     def get(self):
         visits = self.request.cookies.get('visits', 0)
-        visits = int(visits)
-        visits += 1
+        if visits.isdigit():
+            visits = int(visits) + 1
+        else:
+            visits = 0
         self.response.headers.add_header('Set-Cookie', 'visits=%s' % visits)
 
-        self.write("You've been here %s times!" % visits)
+        if visits > 10000:
+            self.write("You are the best ever!")
+        else: 
+            self.write("You've been here %s times!" % visits)
 
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/newpost', NewPostHandler),
