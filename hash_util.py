@@ -30,7 +30,9 @@ def make_salt():
         output += random.choice(string.letters)
     return output
 
-def hash_item(name, pw, salt=salt)
+salt = make_salt()
+
+def hash_item(name, pw, salt=salt):
     """
     Hash a username+password given the item and a salt.
     """
