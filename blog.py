@@ -3,6 +3,8 @@ import os
 import jinja2
 import webapp2
 
+import hash_util
+
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -105,19 +107,30 @@ class SignupHandler(Handler):
         self.render('signup.html', username=username, **errors)
 
         if not errors:
+            # Store a hash of the password, NOT THE PASSWORD ITSELF.
+            salt = hash_util.make_salt()
+            password = hash_util.hash_item(username, password, salt=salt)
+
             if email:
                 new_user = User(user_id=username, password=password, email=email)
             else:
                 new_user = User(user_id=username, password=password)
             new_user.put()
 
-            self.response.headers.add_header('Set-Cookie', 'user_id=%s' % str(username))
+            # Hash the username for the cookie.
+            hashed_username = hash_util.secure_cookie(username)
+
+            self.response.headers.add_header('Set-Cookie', 'user_id=%s' % str(hashed_username))
             return self.redirect('/blog/welcome')
 
 class SuccessHandler(Handler):
     def get(self):
         username = self.request.cookies.get('user_id')
-        self.render('welcome.html', username=username)
+        if username and hash_util.validate_cookie(username):
+            username = username.split('|')[0]
+            self.render('welcome.html', username=username)
+        else:
+            self.redirect('/blog/signup')
 
 class UserListHandler(Handler):
     def get(self, posts=[]):
