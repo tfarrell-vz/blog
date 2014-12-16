@@ -38,6 +38,27 @@ class BlogHandler(Handler):
         posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC").fetch(25)
         self.render('index.html', posts=posts)
 
+class LoginHandler(Handler):
+    def get(self):
+        self.render('login.html')
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+
+        if username and password:
+            users = User.gql("WHERE user_id = '%s'" % username)
+            user = users.get()
+            if user:
+                hash_ = user.password
+                salt = hash_.split(',')[1]
+                if hash_util.hash_item(username, password, salt) == hash_:
+                    hashed_username = hash_util.secure_cookie(username)
+                    self.response.headers.add_header('Set-Cookie', 'user_id=%s' % str(hashed_username))
+
+        return self.redirect('/blog/welcome')
+
+
 
 class NewPostHandler(Handler):
     def get(self):
@@ -143,5 +164,6 @@ app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/(\d+)', PostHandler),
                                ('/blog/userlist', UserListHandler),
                                ('/blog/signup', SignupHandler),
+                               ('/blog/login', LoginHandler),
                                ('/blog/welcome', SuccessHandler),
                                ], debug=True)
