@@ -1,0 +1,21 @@
+<form method="post">
+<table>
+<tbody>
+	<tr>
+		<td><label for="user">Username</label></td>
+		<td><input id="user" type="text" name="username" value="{{ username }}"></td>
+		<td><p class="error">{{ username_error }}</p></td>
+	</tr>
+	<tr>
+		<td><label for="password">Password</label></td>
+		<td><input id="password" type="password" name="password"></td>
+		<td><p class="error">
+			{% if not passwords_mismatch_error %}
+				{{ password_error }}
+			{% endif %}
+			</p></td>
+	</tr>
+</tbody>
+</table>
+	<input type="submit">
+</form>
