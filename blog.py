@@ -58,7 +58,10 @@ class LoginHandler(Handler):
 
         return self.redirect('/blog/welcome')
 
-
+class LogoutHandler(Handler):
+    def get(self):
+        self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
+        self.redirect('/blog/signup')
 
 class NewPostHandler(Handler):
     def get(self):
@@ -72,6 +75,9 @@ class NewPostHandler(Handler):
             blog_post = Post(subject=subject, content=content)
             blog_post.put()
 
+            # .key()
+            # app engines full representation of the object
+            # .id() will turn it into an integer
             post_id = blog_post.key().id()
 
             self.redirect('/blog/%s' % post_id)
@@ -165,5 +171,6 @@ app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/userlist', UserListHandler),
                                ('/blog/signup', SignupHandler),
                                ('/blog/login', LoginHandler),
+                               ('/blog/logout', LogoutHandler),
                                ('/blog/welcome', SuccessHandler),
                                ], debug=True)
