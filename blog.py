@@ -90,6 +90,15 @@ class PostHandler(Handler):
         
         self.render('index.html', posts=posts)
 
+class PostJSON(Handler):
+    def get(self, post_id):
+        post_id = post_id.split('.')[0]
+        post = Post.get_by_id(int(post_id))
+        posts = []
+        posts.append(post)
+
+        self.render('index.html', posts=posts)
+
 # Verification functions for the signup
 # Return boolean values context to render error messages
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -168,6 +177,7 @@ class UserListHandler(Handler):
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
                                ('/blog/newpost', NewPostHandler),
                                ('/blog/(\d+)', PostHandler),
+                               ('/blog/(\d+).json', PostJSON),
                                ('/blog/userlist', UserListHandler),
                                ('/blog/signup', SignupHandler),
                                ('/blog/login', LoginHandler),
