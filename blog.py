@@ -1,5 +1,7 @@
 import re
 import os
+import json
+
 import jinja2
 import webapp2
 
@@ -94,10 +96,13 @@ class PostJSON(Handler):
     def get(self, post_id):
         post_id = post_id.split('.')[0]
         post = Post.get_by_id(int(post_id))
-        posts = []
-        posts.append(post)
 
-        self.render('index.html', posts=posts)
+        post = {'content': post.content,
+               'subject': post.subject,
+               }
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(post))
 
 # Verification functions for the signup
 # Return boolean values context to render error messages
