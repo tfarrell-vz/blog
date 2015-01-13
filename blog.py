@@ -40,6 +40,19 @@ class BlogHandler(Handler):
         posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC").fetch(25)
         self.render('index.html', posts=posts)
 
+class BlogJSON(Handler):
+    def get(self, posts=[]):
+        posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC").fetch(25)
+        posts_json = []
+        for post in posts:
+            post_json = {'content': post.content,
+                         'subject': post.subject,
+                         }
+            posts_json.append(post_json)
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(posts_json))
+
 class LoginHandler(Handler):
     def get(self):
         self.render('login.html')
@@ -180,6 +193,7 @@ class UserListHandler(Handler):
 
 
 app = webapp2.WSGIApplication([('/blog', BlogHandler),
+                               ('/blog/.json', BlogJSON),
                                ('/blog/newpost', NewPostHandler),
                                ('/blog/(\d+)', PostHandler),
                                ('/blog/(\d+).json', PostJSON),
